@@ -1,0 +1,47 @@
+.none {
+  display: none !important;
+}
+
+body {
+  background: rgb(245, 245, 245);
+  font-family: sans-serif;
+}
+
+h1{
+  font-size: 100px;
+  font-weight: 100;
+  color: rgba(175, 47, 47, 0.15);
+  text-rendering: optimizeLegibility;
+}
+
+.add__todo{
+  box-shadow: rgba(0, 0, 0, 0.03) 0px -2px 1px inset;
+  padding: 16px 16px 16px 60px;
+  background: rgba(0, 0, 0, 0.004);
+  border-style: none;
+  font-size: 24px;
+  box-shadow: rgba(0, 0, 0, 0.2) 0px -1px 5px 0px inset;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.cheked{
+  height: 30px;
+  width: 30px;
+  background-color: red;
+  display: inline-block;
+  cursor: pointer;
+
+}
+
+.ToDo_item p{
+    display: inline-block;
+    padding-left: 15px;
+    margin: 0;
+    vertical-align: center;
+}
+
+.yes{
+  color: gray;
+  text-decoration: line-through;
+}
