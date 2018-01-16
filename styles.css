@@ -12,36 +12,112 @@ h1{
   font-weight: 100;
   color: rgba(175, 47, 47, 0.15);
   text-rendering: optimizeLegibility;
+  margin: 0;
+  text-align: center;
 }
 
 .add__todo{
-  box-shadow: rgba(0, 0, 0, 0.03) 0px -2px 1px inset;
   padding: 16px 16px 16px 60px;
-  background: rgba(0, 0, 0, 0.004);
   border-style: none;
   font-size: 24px;
   box-shadow: rgba(0, 0, 0, 0.2) 0px -1px 5px 0px inset;
   box-sizing: border-box;
   outline: none;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .cheked{
+  position: relative;
   height: 30px;
   width: 30px;
-  background-color: red;
+  border: 1px solid #66CDAA;
   display: inline-block;
   cursor: pointer;
+  border-radius: 50%;
+}
 
+.ToDo_item{
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  background-color: #fff;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-left: 5px;
+  position: relative;
+  border-top: 1px solid #e6e6e6;
 }
 
 .ToDo_item p{
     display: inline-block;
     padding-left: 15px;
     margin: 0;
-    vertical-align: center;
 }
 
-.yes{
+.ready:after{
+  content: "\2714";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  color: #66CDAA;
+}
+
+
+.completed{
   color: gray;
   text-decoration: line-through;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.container{
+  width: 550px;
+  margin: 0 auto;
+}
+
+.news__count{
+  position: relative;
+  background-color: #fff;
+  margin: 0;
+  border-top: 1px solid #e6e6e6;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+}
+
+.news__count:before{
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 50px;
+    overflow: hidden;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 8px 0 -3px #f6f6f6, 0 9px 1px -3px rgba(0, 0, 0, 0.2), 0 16px 0 -6px #f6f6f6, 0 17px 2px -6px rgba(0, 0, 0, 0.2);
+    z-index: -1;
+  }
+
+a{
+  cursor: pointer;
+  padding: 3px;
+  text-decoration: none;
+  margin-left: 10px;
+}
+
+.delete { 
+  cursor: pointer;
+  position: absolute;
+  right: 20px;
+  color: brown;
+  display: none;
+}
+
+.ToDo_item:hover .delete {
+  display: block;
 }

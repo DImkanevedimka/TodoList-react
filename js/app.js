@@ -1,142 +1,146 @@
 'use strict';
 
-var Newtodos = [
-  {
-    list: 'test'
-  },
-  {
-    list: 'test1'
-  },
-  {
-    list: 'test2'
-  }
-];
 
-window.ee = new EventEmitter();
+class Todo extends React.Component {
 
-var Todo = React.createClass({
-
-  getInitialState: function() {
-    return {
-      isReady: false
-    }
-  },
-
-  isReadyClick: function(){
-    this.setState({isReady: !this.state.isReady});
-  },
-  
-  render: function() {
+  render() {
+    var data = this.props.data
+    var remove;
     return (
-      <div className='ToDo_item'>
-      <div className="cheked" onClick={this.isReadyClick}/>
-      <p className={'new_todo ' + (this.state.isReady ? 'yes':'')}>{this.props.data.list}</p>
-      </div>
-    )
-  }
-});
-
-
-
-var Todoes = React.createClass({
-  propTypes: {
-    data: React.PropTypes.array.isRequired
-  },
-  
-    
-  render: function() {
-    var data = this.props.data;
-    var newsTemplate;
-    var kindex = data.length+1;
-    if (data.length > 0) {
-      newsTemplate = data.map(function(item) {
-        kindex-- 
-        return (
-          <div >
-          <Todo  key={kindex} data={item} />
-          </div>
-        )
-      })
-    } else {
-      return
-    }
-    
-    return (
-      <div className='Todo_all'>
-      {newsTemplate}
-      <p
-      className={'news__count ' + (data.length > 0 ? '':'none') }>{data.length} item left</p>
-      </div>
+      <li className={'ToDo_item '+ (this.props.data.ready ? 'completed':'')}>
+      <div className={"cheked "+ (this.props.data.ready ? 'ready':'')} onClick={() => {this.props.changeReady(data.id, !data.Ready)}}/>
+      <span className={'delete'} onClick={() => {this.props.remove(data.id)}}>x</span>
+      <p className={'new_todo'}>{data.text}</p>
+      </li>
     );
   }
-});
+}
 
-var Add = React.createClass({
+
+const Todoes = ({data,remove,changeReady}) => {
   
-  onBtnClickHandler: function(e) {
-    if (e.keyCode === 13) {
+  const todoTemplate = data.map((todo) => {
+    return (<Todo key={todo.id} data={todo} remove={remove} changeReady={changeReady}/>)
+  });
+  
+  return (
+    <ul className='Todo_all'>
+    {todoTemplate}
+    <div
+    className={'news__count ' + (data.length > 0 ? '':'none') }>
+    <div>{data.length} items</div>
+    <a href='#'>All</a>
+    <a href='#'>Active</a>
+    <a href='#'>completed</a>
+    </div>
+    </ul>
+  )
+}
+
+
+const Add = ({addTodo}) => {
+  let input;
+  return (
+    <form onSubmit={(e) => {
       e.preventDefault();
-      var textEl = ReactDOM.findDOMNode(this.refs.text);
-      var text = textEl.value;
-      
-      var item = [{
-        list: text
-      }];
-      
-      window.ee.emit('test', item);
-      
-      textEl.value = '';
-      this.setState({textIsEmpty: true});
-    }
-  },
-  
-    
-  render: function() {
-    return (
-      <form className='add cf'>
-      <input
-      type='text'
-      className='add__todo'
-      onChange={this.onFieldChange.bind(this, 'authorIsEmpty')}
-      placeholder='What needs to be done?'
-      ref='text'
-      onKeyDown={this.onBtnClickHandler}
-      />
-      </form>
-    );
-  }
-});
+      addTodo(input.value);
+      input.value = '';
+    }}>
+    <input className="add__todo"
+    placeholder='What needs to be done?'
+    ref={node => {
+      input = node;
+    }} />
+    </form>
+  );
+};
 
-var App = React.createClass({
-  getInitialState: function() {
-    return {
-      news: Newtodos
-    };
-  },
+window.id = 0;
+
+class App extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      data: []
+    }
+    
+    this.apiUrl = '//5a588c860409b00012ffe67d.mockapi.io/todos'
+  };
   
-  componentDidMount: function() {
+  componentDidMount() {
     var self = this;
-    window.ee.addListener('test', function(item) {
-      var nextNews = item.concat(self.state.news);
-      self.setState({news: nextNews});
+    axios.get(this.apiUrl)
+    .then((res) => {
+      
+      this.setState({data:res.data});
     });
-  },
+  }
   
-  componentWillUnmount: function() {
-    window.ee.removeListener('test');
-  },
+  addTodo2(val){
+    const todo = {text: val};
+    axios.post(this.apiUrl, todo)
+    .then((res) => {
+      this.state.data.push(res.data);
+      this.setState({data: this.state.data});
+    });
+  }
   
-  render: function() {
+  changeReady(id, val){
+    console.log(id, val);
+    var data=this.state.data
+    // for (let i=0; i<data.length;i++){
+    //   axios.delete(this.apiUrl+'/'+data[i].id)
+    // }
+  
+    const remainder = data.filter((todo) => {
+      if(todo.id !== id) {
+        console.log(todo)
+        return todo
+      } else {
+        todo.ready = !todo.ready;
+        console.log(todo)
+        return todo
+      }});
+
+      for (let i=0; i<data.length;i++){
+        console.log(data.length + " eto i:" + data[i].id)
+      axios.delete(this.apiUrl+'/'+ data[i].id)
+    }
+
+      // for(let i=0; i<remainder.length;i++){
+      //   axios.post(this.apiUrl, remainder[i])
+      // }
+
+      this.setState({data: remainder});       
+  }
+  
+  handleRemove(id){
+    const remainder = this.state.data.filter((todo) => {
+      if(todo.id !== id) return todo;
+    });
+    
+    axios.delete(this.apiUrl+'/'+id)
+    .then((res) => {
+      this.setState({data: remainder});      
+    })
+  }
+  
+  render() {
     console.log('render');
     return (
       <div className='app'>
-      <h1>todos</h1>
-      <Add />
-      <Todoes data={this.state.news} />
+      <h1>Todos</h1>
+      <Add addTodo={this.addTodo2.bind(this)}/>
+      <Todoes 
+      changeReady= {this.changeReady.bind(this)}
+      data={this.state.data}
+      remove={this.handleRemove.bind(this)}
+      />
       </div>
     );
   }
-});
+};
+
 
 ReactDOM.render(
   <App />,
